@@ -2,14 +2,14 @@
 #include <string.h>
 
 int main(int argc, char *argv[]) {
-  int skip_new_line = argc > 1 && strcmp(argv[1], "-n") == 0;
-  int i = skip_new_line ? 2 : 1;
+  int no_newline = argc > 1 && strcmp(argv[1], "-n") == 0;
+  int i = no_newline ? 2 : 1;
 
   while (i < argc) {
     printf("%s ", argv[i]);
     i++;
   }
-  if (!skip_new_line) {
+  if (!no_newline) {
     printf("\n");
   }
 
