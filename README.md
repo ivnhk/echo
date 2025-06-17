@@ -1,14 +1,14 @@
-echo 
+# echo 
 
 Playing with C language. Trying to re-implement `echo` utility.
 
-# Build
+## Build
 I don't use anything fancy. Just `gcc`:
 ```
 gcc echo -o echo
 ```
 
-# Test (manual)
+## Test (manual)
 ```
 ./echo <your-arguments>
 ```
