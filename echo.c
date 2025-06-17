@@ -2,7 +2,7 @@
 #include <string.h>
 
 int main(int argc, char *argv[]) {
-  int skip_new_line = argc > 1 && strcmp(argv[1], "-n");
+  int skip_new_line = argc > 1 && strcmp(argv[1], "-n") == 0;
   int i = skip_new_line ? 2 : 1;
 
   while (i < argc) {
