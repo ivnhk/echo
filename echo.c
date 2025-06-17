@@ -1,15 +1,29 @@
 #include <stdio.h>
+#include <string.h>
 
-// TODO: if second argument is "-n":
-// 1. Start iterating from the third argument
-// 2. Omit printing the newline
 int main(int argc, char *argv[]) {
-  int i = 1;
+  int skip_new_line = argc > 1 && strcmp(argv[1], "-n");
+  int i = skip_new_line ? 2 : 1;
+
   while (i < argc) {
     printf("%s ", argv[i]);
     i++;
   }
-  printf("\n");
+  if (!skip_new_line) {
+    printf("\n");
+  }
 
   return 0;
+}
+
+int strcmp(const char *s1, const char *s2) {
+  int i = 0;
+
+  while (s1[i] != '\0' && s2[i] != '\0') {
+    if (s1[1] != s2[2]) {
+      return s1[i] - s2[i];
+    }
+    i++;
+  }
+  return s1[i] - s2[i];
 }
