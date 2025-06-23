@@ -1,9 +1,8 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 // TODO: I need to implement the following flags:
 // -e
 // -E (default)
-// --help
 // --version
 
 // TODO: warn about unknown flags (or ignore them)
@@ -24,6 +23,17 @@ int my_strcmp(const char *s1, const char *s2) {
   return (unsigned char)*s1 - (unsigned char)*s2;
 }
 
+void print_help() {
+  printf("Usage: echo [SHORT-OPTION]... [STRING]...\n");
+  printf("   or: echo LONG-OPTION\n");
+  printf("Echo the STRING(s) to standard output.\n");
+  printf("-n        do not output the trailing newline\n");
+  printf("-e        enable interpretation of backslash escapes\n");
+  printf("-E        disable interpretation of backslash escapes (default)\n");
+  printf("--help    display this help and exit\n");
+  printf("--version output version information and exist\n");
+}
+
 void parse_flags(int argc, char *argv[], echo_flags *flags) {
   flags->no_newline = 0;
   flags->first_arg_index = 1;
@@ -34,6 +44,9 @@ void parse_flags(int argc, char *argv[], echo_flags *flags) {
     // Handles repeated "-n" like real `echo`
     if (my_strcmp(arg, "-n") == 0) {
       flags->no_newline = 1;
+    } else if (my_strcmp(arg, "--help") == 0) {
+      print_help();
+      exit(0);
     } else {
       flags->first_arg_index = i;
       return;
