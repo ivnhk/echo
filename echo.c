@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO: warn about unknown flags (and ignore them)
 typedef struct {
   int no_newline;
   int first_arg_index;
@@ -37,10 +36,6 @@ void print_version() {
   printf("written by Ivan Hrekov\n");
 }
 
-// TODO: refactor flag parsing to something a bit more sophisticated
-// 1. Detect if it's a flag. If it is - then parse it, and act accordingly
-// 2. If not, then notify user about it.
-// Q: can there be multiple flags combined like -eEn
 void parse_flags(int argc, char *argv[], echo_flags *flags) {
   flags->no_newline = 0;
   flags->first_arg_index = 1;
@@ -49,17 +44,30 @@ void parse_flags(int argc, char *argv[], echo_flags *flags) {
   for (int i = 1; i < argc; i++) {
     const char *arg = argv[i];
 
-    // Handles repeated "-n" like real `echo`
-    if (strcmp_learn(arg, "-n") == 0) {
-      flags->no_newline = 1;
-    } else if (strcmp_learn(arg, "--help") == 0) {
+    // Handles combined short options like GNU echo
+    if (arg[0] == '-' && arg[1] && arg[1] != '-') {
+      for (int j = 1; arg[j]; j++) {
+        switch (arg[j]) {
+        case 'n':
+          flags->no_newline = 1;
+          break;
+        case 'e':
+          flags->interpret_escapes = 1;
+          break;
+        default:
+          printf("echo: warning: unknown flag -%c\n", arg[j]);
+          break;
+        }
+      }
+    }
+
+    if (strcmp_learn(arg, "--help") == 0) {
       print_help();
       exit(0);
     } else if (strcmp_learn(arg, "--version") == 0) {
       print_version();
       exit(0);
-    } else if (strcmp_learn(arg, "-e") == 0) {
-      flags->interpret_escapes = 1;
+      // -E is parsed separately like in GNU echo
     } else if (strcmp_learn(arg, "-E") == 0) {
       flags->interpret_escapes = 0;
     } else {
@@ -85,7 +93,7 @@ void print_escaped(const char *s) {
     if (*s == '\\') {
       s++;
       if (!*s) {
-        exit(0);
+        return;
       }
       switch (*s) {
       case 'a':
@@ -95,10 +103,9 @@ void print_escaped(const char *s) {
         putchar('\b');
         break;
       case 'c':
-        exit(0); // I see it as a correct behavior
-        break;
+        return;
       case 'e':
-        putchar('\x1B');
+        putchar('\x1B'); // ESC
         break;
       case 'f':
         putchar('\f');
@@ -137,6 +144,12 @@ void print_escaped(const char *s) {
           s++;
           count++;
         }
+        if (!isxdigit(*s)) {
+          putchar('\\');
+          putchar('x');
+          s--;
+          break;
+        }
         putchar(val);
       } break;
       default:
@@ -151,7 +164,6 @@ void print_escaped(const char *s) {
   }
 }
 
-// Q: should I add examples in order to show how to use the thing
 int main(int argc, char *argv[]) {
   if (argc == 1) {
     return 0;
